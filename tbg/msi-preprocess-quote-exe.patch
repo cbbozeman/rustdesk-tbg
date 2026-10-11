@@ -1,0 +1,13 @@
+diff --git a/res/msi/preprocess.py b/res/msi/preprocess.py
+index ffbd47880..47d68d7be 100644
+--- a/res/msi/preprocess.py
++++ b/res/msi/preprocess.py
+@@ -465,7 +465,7 @@ def init_global_vars(dist_dir, app_name, args):
+ 
+     def read_process_output(args):
+         process = subprocess.Popen(
+-            f"{dist_app} {args}",
++            f"\"{dist_app}\" {args}",
+             stdout=subprocess.PIPE,
+             stderr=subprocess.STDOUT,
+             shell=True,
