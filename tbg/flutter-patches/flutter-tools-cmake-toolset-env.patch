@@ -1,0 +1,15 @@
+diff --git a/packages/flutter_tools/lib/src/windows/build_windows.dart b/packages/flutter_tools/lib/src/windows/build_windows.dart
+index c614c64b4e9..0d12d7591dc 100644
+--- a/packages/flutter_tools/lib/src/windows/build_windows.dart
++++ b/packages/flutter_tools/lib/src/windows/build_windows.dart
+@@ -198,6 +198,10 @@ Future<void> _runCmakeGeneration({
+         generator,
+         '-A',
+         getCmakeWindowsArch(targetPlatform),
++        if ((globals.platform.environment['CMAKE_GENERATOR_TOOLSET'] ?? '').isNotEmpty) ...<String>[
++          '-T',
++          globals.platform.environment['CMAKE_GENERATOR_TOOLSET']!,
++        ],
+         '-DFLUTTER_TARGET_PLATFORM=${getNameForTargetPlatform(targetPlatform)}',
+       ],
+       trace: true,

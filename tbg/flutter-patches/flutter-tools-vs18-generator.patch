@@ -1,0 +1,12 @@
+diff --git a/packages/flutter_tools/lib/src/windows/visual_studio.dart b/packages/flutter_tools/lib/src/windows/visual_studio.dart
+index eb7e701e633..788f4432486 100644
+--- a/packages/flutter_tools/lib/src/windows/visual_studio.dart
++++ b/packages/flutter_tools/lib/src/windows/visual_studio.dart
+@@ -181,6 +181,7 @@ class VisualStudio {
+     // From https://cmake.org/cmake/help/v3.22/manual/cmake-generators.7.html#visual-studio-generators
+     return switch (_majorVersion) {
+       17 => 'Visual Studio 17 2022',
++      18 => 'Visual Studio 18 2026',
+       _  => 'Visual Studio 16 2019',
+     };
+   }
