@@ -46,7 +46,7 @@ function Run($exe, [string[]]$argv) {
     & $exe @argv
     if ($LASTEXITCODE -ne 0) { Fail "'$exe $argv' failed with exit code $LASTEXITCODE" }
 }
-function Git([string[]]$argv) { Run git $argv }
+function Invoke-Git([string[]]$argv) { Run git.exe $argv }
 function IsPatchApplied($dir, $patch) {
     git -C $dir apply --check -R $patch 2>$null
     return $LASTEXITCODE -eq 0
@@ -57,7 +57,7 @@ $Version = (Select-String -Path Cargo.toml -Pattern '^version\s*=\s*"([^"]+)"').
 
 # ---------------------------------------------------------------- preflight
 Step "Preflight ($AppName $Version)"
-Git @('submodule', 'update', '--init', '--recursive')
+Invoke-Git @('submodule', 'update', '--init', '--recursive')
 
 $dirty = git status --porcelain --ignore-submodules=none -- libs/hbb_common res/msi flutter/pubspec.lock
 if ($dirty) { Fail "libs/hbb_common, res/msi or flutter/pubspec.lock has local changes; commit or revert them first:`n$dirty" }
@@ -125,7 +125,7 @@ try {
 
     # ------------------------------------------------------------ branding patch
     Step 'Apply hbb_common branding patch'
-    Git @('-C', 'libs/hbb_common', 'apply', $hbbPatch)
+    Invoke-Git @('-C', 'libs/hbb_common', 'apply', $hbbPatch)
 
     # ------------------------------------------------------------ bridge + build
     Step 'Flutter dependencies and Rust bridge'
@@ -175,12 +175,12 @@ try {
 
     # ------------------------------------------------------------ MSI
     Step 'MSI'
-    Git @('apply', "$Repo\tbg\msi-preprocess-quote-exe.patch")
+    Invoke-Git @('apply', "$Repo\tbg\msi-preprocess-quote-exe.patch")
     Push-Location res\msi
     try {
         Run python @('preprocess.py', '-d', $Dist, '--app-name', $AppName, '-m', $Manufacturer)
         # preprocess.py rewrites the license to name the app as licensor; ship upstream's.
-        Git @('checkout', '--', 'Package/License.rtf')
+        Invoke-Git @('checkout', '--', 'Package/License.rtf')
         Run msbuild @('msi.sln', '-restore', '-p:RestorePackagesConfig=true', '-p:Configuration=Release',
             '-p:Platform=x64', '/p:TargetVersion=Windows10', '-v:minimal', '-nologo')
     } finally { Pop-Location }
