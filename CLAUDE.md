@@ -77,6 +77,26 @@ MSI version is `<version>.<minutes since epoch>` (upstream default), so every bu
 upgrades the previous one. Component GUIDs are regenerated per build by
 `preprocess.py` for non-RustDesk names; compare MSIs by payload, not bytes.
 
+## Release (after the MSI passes the manual test on a separate machine)
+
+Releases go on the fork only; always pass `--repo`, because `gh` would otherwise
+default to the upstream parent. Tags are `tbg-v<version>`, which do not match the
+`v1.2.3` patterns that trigger upstream's `flutter-tag.yml` / `fdroid.yml`, and
+upstream's CI only runs on `master`, so pushing a `tbg-*` branch or tag starts no
+workflows.
+
+```
+git push origin tbg-<version>
+sha256sum tbg/out/TBG-Remote-Support-<version>-x64.msi   # must be the tested MSI
+gh release create tbg-v<version> --repo cbbozeman/rustdesk-tbg --target tbg-<version> \
+  --title "TBG Remote Support <version>" --notes-file <notes.md> \
+  tbg/out/TBG-Remote-Support-<version>-x64.msi
+```
+
+Release notes state: the MSI's SHA-256; built from RustDesk <version> under
+AGPL-3.0 (link the source branch); incoming sessions require the person at the
+computer to click Accept by default; the MSI is not code-signed.
+
 ## Toolchain (one-time; checked by build.ps1)
 
 Pinned by the 1.5.0 workflow, installed here:
@@ -114,6 +134,7 @@ environment is stale (no VS 2022 instance); the script overrides it in-process.
 5. If the Flutter version changes, re-check the RustDesk engine zip and the
    dropdown patch, and re-derive `tbg/flutter-patches` for the new Flutter tool.
 6. `pwsh -File tbg\build.ps1 -Clean`, then run the manual checklist.
+7. Publish as described under Release.
 
 ## Local Flutter checkout (C:\Development\flutter, 3.24.5)
 
