@@ -28,8 +28,20 @@ TBG-specific lives in `tbg/`; upstream files are touched only where listed below
   Do not add `flutter/assets/icon.png`: `src/tray.rs` prefers it over
   `res/tray-icon.ico`, which would replace the tray icon.
 
-App name, server and key are NOT committed: `tbg/hbb_common-tbg.patch` is applied
-to the `libs/hbb_common` submodule at build time (never commit in the submodule).
+App name, server, key and the approve-mode default are NOT committed:
+`tbg/hbb_common-tbg.patch` is applied to the `libs/hbb_common` submodule at build
+time (never commit in the submodule). It sets:
+
+* `APP_NAME` = `TBG Remote Support`
+* `RENDEZVOUS_SERVERS` = `rustdesk.thebozemangroup.com`
+* `RS_PUB_KEY` = `2r3thg3fI+kdwKIrtWb6wZgCvWG+8GwPfYdo4drYL4k=`
+* `DEFAULT_SETTINGS` = `approve-mode: click`: incoming sessions must be accepted
+  by click (Settings > Security > "Accept sessions via click"). It is a default,
+  not an override (`OVERWRITE_SETTINGS`), so the user can still switch to
+  password or both; the choice is saved in `TBG Remote Support2.toml` only when
+  it differs from the default. Values read by `password_security::approve_mode()`:
+  `password`, `click`, anything else = both.
+
 Runtime strings pick up `APP_NAME`; "Powered by RustDesk" is deliberately excluded
 by `src/lang.rs` (`powered_by_me`) and must stay.
 
@@ -52,7 +64,8 @@ On exit it reverts the hbb_common patch, `res/msi` and `flutter/pubspec.lock`.
 
 Build-time fixes applied and reverted by the script (never committed):
 
-* `tbg/hbb_common-tbg.patch`: APP_NAME, RENDEZVOUS_SERVERS, RS_PUB_KEY.
+* `tbg/hbb_common-tbg.patch`: APP_NAME, RENDEZVOUS_SERVERS, RS_PUB_KEY,
+  DEFAULT_SETTINGS (approve-mode = click).
 * `tbg/msi-preprocess-quote-exe.patch`: `preprocess.py` runs `<app>.exe --version`
   through cmd unquoted, which fails for names with spaces.
 * `res/msi/Package/License.rtf` is restored after `preprocess.py`, which would
@@ -89,7 +102,7 @@ environment is stale (no VS 2022 instance); the script overrides it in-process.
    ones touch only the files listed above). Conflicts are most likely in
    `Runner.rc` if upstream changed its copyright year.
 3. `git -C libs/hbb_common apply --check ../../tbg/hbb_common-tbg.patch`. If it
-   fails, edit the three lines by hand, then regenerate:
+   fails, edit the four lines by hand, then regenerate:
    `git -C libs/hbb_common diff > tbg/hbb_common-tbg.patch` and revert the submodule.
    Same for `tbg/msi-preprocess-quote-exe.patch` against `res/msi/preprocess.py`
    (drop it if upstream quotes the path).

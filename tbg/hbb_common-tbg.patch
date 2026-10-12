@@ -1,8 +1,8 @@
 diff --git a/src/config.rs b/src/config.rs
-index 6fe1004..8a4ec13 100644
+index 6fe1004..ca7d112 100644
 --- a/src/config.rs
 +++ b/src/config.rs
-@@ -69,7 +69,7 @@ lazy_static::lazy_static! {
+@@ -69,11 +69,11 @@ lazy_static::lazy_static! {
      static ref ONLINE: Mutex<HashMap<String, i64>> = Default::default();
      pub static ref PROD_RENDEZVOUS_SERVER: RwLock<String> = RwLock::new("".to_owned());
      pub static ref EXE_RENDEZVOUS_SERVER: RwLock<String> = Default::default();
@@ -11,6 +11,11 @@ index 6fe1004..8a4ec13 100644
      static ref KEY_PAIR: Mutex<Option<KeyPair>> = Default::default();
      static ref USER_DEFAULT_CONFIG: RwLock<(UserDefaultConfig, Instant)> = RwLock::new((UserDefaultConfig::load(), Instant::now()));
      pub static ref NEW_STORED_PEER_CONFIG: Mutex<HashSet<String>> = Default::default();
+-    pub static ref DEFAULT_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
++    pub static ref DEFAULT_SETTINGS: RwLock<HashMap<String, String>> = RwLock::new(HashMap::from([("approve-mode".to_owned(), "click".to_owned())]));
+     pub static ref OVERWRITE_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
+     pub static ref DEFAULT_DISPLAY_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
+     pub static ref OVERWRITE_DISPLAY_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
 @@ -114,8 +114,8 @@ const CHARS: &[char] = &[
      'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
  ];
